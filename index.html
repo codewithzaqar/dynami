@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Tab</title>
   <style>
-    /* Center content and add background color */
+    /* Centering and styling basics */
     body, html {
       margin: 0;
       padding: 0;
@@ -16,14 +16,16 @@
       height: 100vh;
       background-color: #f2f2f2;
     }
-    
-    /* Container for logo and search bar */
+
+    /* Main container */
     .search-container {
       text-align: center;
       width: 100%;
       max-width: 600px;
+      padding: 0 20px;
     }
-    
+
+    /* Logo style */
     .logo {
       font-size: 64px;
       font-weight: bold;
@@ -31,25 +33,43 @@
       margin-bottom: 20px;
     }
 
+    /* Search bar with icon and clear button */
     .search-bar {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    
+
     input[type="text"] {
       width: 100%;
-      padding: 12px 20px 12px 40px;
+      padding: 12px 40px 12px 40px;
       font-size: 18px;
       border: 1px solid #dcdcdc;
       border-radius: 24px;
       outline: none;
     }
-    
-    /* Search button styling */
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .clear-icon {
+      position: absolute;
+      right: 12px;
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+      display: none;
+    }
+
+    /* Button styling */
     button {
-      margin-left: 10px;
+      margin-top: 20px;
       padding: 10px 20px;
       font-size: 16px;
       border: none;
@@ -59,21 +79,12 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-    
+
     button:hover {
       background-color: #357ae8;
     }
 
-    /* Search icon styling */
-    .search-icon {
-      position: absolute;
-      left: 10px;
-      font-size: 18px;
-      color: #888;
-      cursor: pointer;
-    }
-
-    /* Suggestions styling */
+    /* Suggestions dropdown */
     .suggestions {
       position: absolute;
       top: 100%;
@@ -98,6 +109,22 @@
     .suggestion-item:hover {
       background-color: #f1f1f1;
     }
+
+    .no-suggestions {
+      padding: 10px;
+      color: #888;
+      text-align: center;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      input[type="text"] {
+        font-size: 16px;
+      }
+      .logo {
+        font-size: 48px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -107,9 +134,10 @@
   <div class="search-bar">
     <span class="search-icon" onclick="performSearch()">🔍</span>
     <input type="text" id="searchInput" placeholder="Search..." oninput="showSuggestions()" autocomplete="off">
-    <button onclick="performSearch()">Search</button>
+    <span class="clear-icon" onclick="clearSearch()">✖</span>
     <div id="suggestions" class="suggestions"></div>
   </div>
+  <button onclick="performSearch()">Search</button>
 </div>
 
 <script>
@@ -128,34 +156,52 @@
     const query = document.getElementById("searchInput").value;
     if (query) {
       alert(`Searching for: ${query}`);
-      // Redirect or show search results
+      // Simulate or redirect to results
     }
   }
 
   function showSuggestions() {
     const query = document.getElementById("searchInput").value.toLowerCase();
     const suggestionsBox = document.getElementById("suggestions");
+    const clearIcon = document.querySelector(".clear-icon");
     suggestionsBox.innerHTML = '';
+    
+    // Show or hide clear icon based on input
+    clearIcon.style.display = query ? 'inline' : 'none';
 
     if (query) {
       const filteredSuggestions = suggestions.filter(item => item.toLowerCase().includes(query));
-      
-      filteredSuggestions.forEach(item => {
-        const suggestionItem = document.createElement("div");
-        suggestionItem.classList.add("suggestion-item");
-        suggestionItem.textContent = item;
-        suggestionItem.onclick = () => {
-          document.getElementById("searchInput").value = item;
-          suggestionsBox.style.display = 'none';
-          performSearch();
-        };
-        suggestionsBox.appendChild(suggestionItem);
-      });
-      
-      suggestionsBox.style.display = filteredSuggestions.length ? 'block' : 'none';
+
+      if (filteredSuggestions.length) {
+        filteredSuggestions.forEach(item => {
+          const suggestionItem = document.createElement("div");
+          suggestionItem.classList.add("suggestion-item");
+          suggestionItem.textContent = item;
+          suggestionItem.onclick = () => {
+            document.getElementById("searchInput").value = item;
+            suggestionsBox.style.display = 'none';
+            performSearch();
+          };
+          suggestionsBox.appendChild(suggestionItem);
+        });
+      } else {
+        const noResults = document.createElement("div");
+        noResults.classList.add("no-suggestions");
+        noResults.textContent = "No suggestions found";
+        suggestionsBox.appendChild(noResults);
+      }
+
+      suggestionsBox.style.display = 'block';
     } else {
       suggestionsBox.style.display = 'none';
     }
+  }
+
+  function clearSearch() {
+    const searchInput = document.getElementById("searchInput");
+    searchInput.value = '';
+    document.getElementById("suggestions").style.display = 'none';
+    document.querySelector(".clear-icon").style.display = 'none';
   }
 
   // Close suggestions when clicking outside
