@@ -1,89 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Tab</title>
-    <style>
-        /* Basic styling to center content and style the search bar */
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f2f2f2;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab</title>
+  <style>
+    /* Center content and add background color */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f2f2f2;
+    }
+    
+    /* Container for logo and search bar */
+    .search-container {
+      text-align: center;
+      width: 100%;
+      max-width: 600px;
+    }
+    
+    .logo {
+      font-size: 64px;
+      font-weight: bold;
+      color: #4285f4;
+      margin-bottom: 20px;
+    }
 
-        .search-container {
-            text-align: center;
-        }
+    .search-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 20px 12px 40px;
+      font-size: 18px;
+      border: 1px solid #dcdcdc;
+      border-radius: 24px;
+      outline: none;
+    }
+    
+    /* Search button styling */
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #4285f4;
+      color: white;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #357ae8;
+    }
 
-        .logo {
-            font-size: 64px;
-            font-weight: bold;
-            color: #4285f4;
-        }
+    /* Search icon styling */
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+    }
 
-        .search-bar {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-        }
+    /* Suggestions styling */
+    .suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-top: 5px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+      display: none;
+    }
 
-        input[type="text"] {
-            width: 500px;
-            padding: 10px;
-            font-size: 18px;
-            border: 1px solid #dcdcdc;
-            border-radius: 24px;
-            outline: none;
-        }
+    .suggestion-item {
+      padding: 10px;
+      cursor: pointer;
+    }
 
-        button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            background-color: #4285f4;
-            color: white;
-            border-radius: 24px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #357ae8;
-        }
-    </style>
+    .suggestion-item:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
 </head>
 <body>
-    
-    <div class="search-container">
-        <div class="logo">Dynami</div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search...">
-            <button onclick="performSearch()">Search</button>
-        </div>
-    </div>
 
-    <script>
-        function performSearch() {
-            const query = document.getElementById("searchInput").value;
-            if (query) {
-                alert(`Searching for: ${query}`);
-                // Here you could redirect to a search results page, e.g., `window.location.href = "results.html?q=" + query;`
-            }
+<div class="search-container">
+  <div class="logo">Dynami</div>
+  <div class="search-bar">
+    <span class="search-icon" onclick="performSearch()">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search..." oninput="showSuggestions()" autocomplete="off">
+    <button onclick="performSearch()">Search</button>
+    <div id="suggestions" class="suggestions"></div>
+  </div>
+</div>
 
-            // Trigger search on pressing 'Enter'
-            document.getElementById("searchInput").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    performSearch()
-                }
-            })
-        }
-    </script>
-    
+<script>
+  const suggestions = [
+    "How to learn JavaScript",
+    "JavaScript tutorials",
+    "Best JavaScript frameworks",
+    "JavaScript events",
+    "JavaScript DOM manipulation",
+    "JavaScript basics",
+    "CSS animations",
+    "Responsive web design"
+  ];
+
+  function performSearch() {
+    const query = document.getElementById("searchInput").value;
+    if (query) {
+      alert(`Searching for: ${query}`);
+      // Redirect or show search results
+    }
+  }
+
+  function showSuggestions() {
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const suggestionsBox = document.getElementById("suggestions");
+    suggestionsBox.innerHTML = '';
+
+    if (query) {
+      const filteredSuggestions = suggestions.filter(item => item.toLowerCase().includes(query));
+      
+      filteredSuggestions.forEach(item => {
+        const suggestionItem = document.createElement("div");
+        suggestionItem.classList.add("suggestion-item");
+        suggestionItem.textContent = item;
+        suggestionItem.onclick = () => {
+          document.getElementById("searchInput").value = item;
+          suggestionsBox.style.display = 'none';
+          performSearch();
+        };
+        suggestionsBox.appendChild(suggestionItem);
+      });
+      
+      suggestionsBox.style.display = filteredSuggestions.length ? 'block' : 'none';
+    } else {
+      suggestionsBox.style.display = 'none';
+    }
+  }
+
+  // Close suggestions when clicking outside
+  document.addEventListener("click", function(event) {
+    if (!event.target.closest(".search-bar")) {
+      document.getElementById("suggestions").style.display = 'none';
+    }
+  });
+
+  // Trigger search on pressing 'Enter'
+  document.getElementById("searchInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      performSearch();
+    }
+  });
+</script>
+
 </body>
 </html>
